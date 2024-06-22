@@ -14,10 +14,8 @@ const root = createRoot(domNode);
 
 const App = () => {
 	const [articleState, setArticleState] = useState(defaultArticleState);
-	const [isOpen, setIsOpen] = useState<boolean>(false);
 	return (
 		<div
-			onClick={() => setIsOpen(false)}
 			className={clsx(styles.main)}
 			style={
 				{
@@ -31,8 +29,6 @@ const App = () => {
 			<ArticleParamsForm
 				articleState={articleState}
 				setArticleState={setArticleState}
-				isOpen={isOpen}
-				setIsOpen={setIsOpen}
 			/>
 			<Article />
 		</div>

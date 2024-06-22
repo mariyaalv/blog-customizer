@@ -3,14 +3,7 @@ import { Button } from '../button';
 
 import styles from './ArticleParamsForm.module.scss';
 import { Select } from '../select';
-import {
-	Dispatch,
-	FormEventHandler,
-	SetStateAction,
-	useEffect,
-	useRef,
-	useState,
-} from 'react';
+import { FormEventHandler, MouseEventHandler, useState } from 'react';
 import {
 	fontFamilyOptions,
 	fontColors,
@@ -28,16 +21,13 @@ import { RadioGroup } from '../radio-group';
 type ArticleParamsFormProps = {
 	articleState: ArticleStateType;
 	setArticleState: (params: ArticleStateType) => void;
-	isOpen: boolean;
-	setIsOpen: Dispatch<SetStateAction<boolean>>;
 };
 
 export const ArticleParamsForm = ({
 	articleState,
 	setArticleState,
-	isOpen,
-	setIsOpen,
 }: ArticleParamsFormProps) => {
+	const [isMenuOpen, setIsMenuOpen] = useState<boolean>(false);
 	const [fontFamily, setFontFamily] = useState(articleState.fontFamilyOption);
 	const [fontSize, setFontSize] = useState(articleState.fontSizeOption);
 	const [fontColor, setFontColor] = useState(articleState.fontColor);
@@ -56,7 +46,7 @@ export const ArticleParamsForm = ({
 			contentWidth: width,
 			fontSizeOption: fontSize,
 		});
-		setIsOpen(false);
+		setIsMenuOpen(false);
 	};
 
 	const resetArticleState = () => {
@@ -68,27 +58,23 @@ export const ArticleParamsForm = ({
 		setBgColor(defaultArticleState.backgroundColor);
 	};
 
-	const arrowButtonRef = useRef<HTMLDivElement>(null);
-
-	useEffect(() => {
-		function handleArrowButtonClick(evt: MouseEvent) {
-			setIsOpen((isOpen) => !isOpen);
-			evt.stopPropagation();
-		}
-		arrowButtonRef.current?.addEventListener('click', handleArrowButtonClick);
-		return () => {
-			arrowButtonRef.current?.removeEventListener(
-				'click',
-				handleArrowButtonClick
-			);
-		};
-	}, []);
+	const handleClickOutside: MouseEventHandler<HTMLDivElement> = (evt) => {
+		console.log('click');
+		evt.stopPropagation();
+		setIsMenuOpen(false);
+	};
 
 	return (
-		<>
-			<ArrowButton arrowButtonRef={arrowButtonRef} isOpen={isOpen} />
+		<div onClick={handleClickOutside} className={styles.div}>
+			<ArrowButton
+				onClick={(evt) => {
+					evt.stopPropagation();
+					setIsMenuOpen(!isMenuOpen);
+				}}
+				isMenuOpen={isMenuOpen}
+			/>
 			<aside
-				className={clsx(styles.container, isOpen && styles.container_open)}
+				className={clsx(styles.container, isMenuOpen && styles.container_open)}
 				onClick={(evt) => evt.stopPropagation()}>
 				<form className={styles.form} onSubmit={handleFormSubmit}>
 					<Text size={31} weight={800} uppercase>
@@ -136,6 +122,6 @@ export const ArticleParamsForm = ({
 					</div>
 				</form>
 			</aside>
-		</>
+		</div>
 	);
 };
